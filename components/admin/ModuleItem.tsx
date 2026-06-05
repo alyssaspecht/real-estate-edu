@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { VideoUploader } from './VideoUploader'
 
-type Lesson = { id: string; title: string; type: string; position: number }
+type Lesson = { id: string; title: string; type: string; position: number; videoPlaybackId?: string | null }
 type Module = { id: string; title: string; position: number; lessons: Lesson[] }
 
 type Props = {
@@ -25,6 +26,8 @@ const lessonTypeIcons: Record<string, string> = {
 function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void }) {
   const [editing, setEditing] = useState(false)
   const [title, setTitle] = useState(lesson.title)
+  const [expanded, setExpanded] = useState(false)
+  const [playbackId, setPlaybackId] = useState(lesson.videoPlaybackId ?? null)
 
   const save = async () => {
     const trimmed = title.trim()
@@ -41,31 +44,55 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
   }
 
   return (
-    <div className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50">
-      <span className="text-sm">{lessonTypeIcons[lesson.type] ?? '📄'}</span>
-      {editing ? (
-        <input
-          autoFocus
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onBlur={save}
-          onKeyDown={(e) => e.key === 'Enter' && save()}
-          className="flex-1 px-2 py-1 border border-blue-400 rounded text-sm focus:outline-none"
-        />
-      ) : (
-        <span
-          className="flex-1 text-sm text-gray-700 cursor-pointer hover:text-blue-600"
-          onClick={() => setEditing(true)}
-        >
-          {title}
+    <div className="border-b border-gray-50 last:border-0">
+      <div className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50">
+        <span className="text-sm">{lessonTypeIcons[lesson.type] ?? '📄'}</span>
+        {editing ? (
+          <input
+            autoFocus
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={save}
+            onKeyDown={(e) => e.key === 'Enter' && save()}
+            className="flex-1 px-2 py-1 border border-blue-400 rounded text-sm focus:outline-none"
+          />
+        ) : (
+          <span
+            className="flex-1 text-sm text-gray-700 cursor-pointer hover:text-blue-600"
+            onClick={() => setEditing(true)}
+          >
+            {title}
+          </span>
+        )}
+        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+          {lesson.type}
         </span>
+        {lesson.type === 'VIDEO' && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="text-xs text-blue-600 hover:underline"
+          >
+            {expanded ? 'Close' : playbackId ? 'Replace video' : 'Upload video'}
+          </button>
+        )}
+        <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600">
+          Delete
+        </button>
+      </div>
+
+      {/* Video upload panel */}
+      {expanded && lesson.type === 'VIDEO' && (
+        <div className="px-6 pb-4 bg-gray-50">
+          <VideoUploader
+            lessonId={lesson.id}
+            currentPlaybackId={playbackId}
+            onUploadComplete={(id) => {
+              setPlaybackId(id)
+              setExpanded(false)
+            }}
+          />
+        </div>
       )}
-      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-        {lesson.type}
-      </span>
-      <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600">
-        Delete
-      </button>
     </div>
   )
 }
