@@ -9,6 +9,7 @@ export async function POST(request: Request) {
 
   const { lessonId, watchPosition } = await request.json()
 
+  // Mark lesson complete
   await prisma.lessonProgress.upsert({
     where: { userId_lessonId: { userId: user.id, lessonId } },
     update: {
@@ -22,6 +23,33 @@ export async function POST(request: Request) {
       watchPositionSeconds: watchPosition ?? 0,
     },
   })
+
+  // Check if all lessons in the course are now complete
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: lessonId },
+    include: { module: { include: { course: { include: { modules: { include: { lessons: true } } } } } } },
+  })
+
+  if (lesson) {
+    const course = lesson.module.course
+    const allLessons = course.modules.flatMap(m => m.lessons)
+
+    const completedProgress = await prisma.lessonProgress.findMany({
+      where: {
+        userId: user.id,
+        lessonId: { in: allLessons.map(l => l.id) },
+        completedAt: { not: null },
+      },
+    })
+
+    // If all lessons completed, mark enrollment as complete
+    if (completedProgress.length >= allLessons.length) {
+      await prisma.enrollment.updateMany({
+        where: { userId: user.id, courseId: course.id, completedAt: null },
+        data: { completedAt: new Date() },
+      })
+    }
+  }
 
   return NextResponse.json({ success: true })
 }
