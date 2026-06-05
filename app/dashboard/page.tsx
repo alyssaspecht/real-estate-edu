@@ -86,6 +86,22 @@ export default async function DashboardPage() {
             >
               My Profile
             </Link>
+            {dbUser?.role === 'LEARNER' && (
+              <Link
+                href="/dashboard/become-creator"
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+              >
+                Become a Creator
+              </Link>
+            )}
+            {dbUser?.role === 'CREATOR' && (
+              <Link
+                href="/creator"
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+              >
+                Creator Dashboard
+              </Link>
+            )}
             {(dbUser?.role === 'ADMIN') && (
               <Link
                 href="/admin"
