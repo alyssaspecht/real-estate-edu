@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+}
+
+// ─── Users & Profiles ───────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  role      Role     @default(LEARNER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile            Profile?
+  enrollments        Enrollment[]
+  orders             Order[]
+  createdCourses     Course[]
+  creatorApplication CreatorApplication?
+  lessonProgress     LessonProgress[]
+}
+
+model Profile {
+  id        String  @id @default(uuid())
+  userId    String  @unique
+  bio       String?
+  headline  String?
+  website   String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  LEARNER
+  CREATOR
+  ADMIN
+}
+
+// ─── Creator Applications ────────────────────────────────────────────
+
+model CreatorApplication {
+  id          String            @id @default(uuid())
+  userId      String            @unique
+  status      ApplicationStatus @default(PENDING)
+  submittedAt DateTime          @default(now())
+  reviewedAt  DateTime?
+  notes       String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─── Courses ─────────────────────────────────────────────────────────
+
+model Course {
+  id          String       @id @default(uuid())
+  creatorId   String
+  title       String
+  slug        String       @unique
+  description String?
+  thumbnail   String?
+  price       Int          @default(0) // in cents
+  status      CourseStatus @default(DRAFT)
+  categoryId  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  publishedAt DateTime?
+
+  creator     User         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  modules     Module[]
+  enrollments Enrollment[]
+  orderItems  OrderItem[]
+  resources   Resource[]
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Category {
+  id       String  @id @default(uuid())
+  name     String  @unique
+  slug     String  @unique
+  parentId String?
+
+  courses  Course[]
+  children Category[] @relation("CategoryChildren")
+  parent   Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
+}
+
+// ─── Modules & Lessons ───────────────────────────────────────────────
+
+model Module {
+  id             String  @id @default(uuid())
+  courseId       String
+  title          String
+  position       Int
+  isFreePreview  Boolean @default(false)
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+}
+
+model Lesson {
+  id             String     @id @default(uuid())
+  moduleId       String
+  title          String
+  position       Int
+  type           LessonType @default(VIDEO)
+  videoAssetId   String?
+  videoPlaybackId String?
+  contentBody    String?
+  durationSeconds Int?
+  isFreePreview  Boolean    @default(false)
+
+  module    Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  resources Resource[]
+  progress  LessonProgress[]
+}
+
+enum LessonType {
+  VIDEO
+  TEXT
+  RESOURCE
+}
+
+model Resource {
+  id       String @id @default(uuid())
+  lessonId String?
+  courseId String?
+  name     String
+  fileUrl  String
+  type     String
+
+  lesson Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  course Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// ─── Learning Progress ───────────────────────────────────────────────
+
+model Enrollment {
+  id             String    @id @default(uuid())
+  userId         String
+  courseId       String
+  purchasedAt    DateTime  @default(now())
+  pricePaid      Int       @default(0)
+  completedAt    DateTime?
+  lastAccessedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model LessonProgress {
+  id              String    @id @default(uuid())
+  userId          String
+  lessonId        String
+  completedAt     DateTime?
+  watchPositionSeconds Int  @default(0)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+// ─── Commerce ────────────────────────────────────────────────────────
+
+model Order {
+  id                    String      @id @default(uuid())
+  userId                String
+  stripePaymentIntentId String?
+  totalCents            Int
+  status                OrderStatus @default(PENDING)
+  createdAt             DateTime    @default(now())
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  FAILED
+}
+
+model OrderItem {
+  id         String @id @default(uuid())
+  orderId    String
+  courseId   String
+  priceCents Int
+
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
