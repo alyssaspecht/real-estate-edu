@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 type Course = {
@@ -18,11 +19,38 @@ type Course = {
 type Category = { id: string; name: string }
 
 export function CourseBrowse({ courses, categories }: { courses: Course[]; categories: Category[] }) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [query, setQuery] = useState(searchParams.get('q') ?? '')
+  const [debouncedQuery, setDebouncedQuery] = useState(query)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const filtered = selectedCategory
-    ? courses.filter((c) => c.category?.id === selectedCategory)
-    : courses
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      setDebouncedQuery(query)
+      const params = new URLSearchParams(window.location.search)
+      if (query) {
+        params.set('q', query)
+      } else {
+        params.delete('q')
+      }
+      router.replace(`/courses?${params.toString()}`, { scroll: false })
+    }, 300)
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [query, router])
+
+  const filtered = courses.filter((c) => {
+    const matchesCategory = !selectedCategory || c.category?.id === selectedCategory
+    const q = debouncedQuery.trim().toLowerCase()
+    const matchesQuery = !q || (
+      c.title.toLowerCase().includes(q) ||
+      (c.description?.toLowerCase().includes(q) ?? false) ||
+      (c.creator.name?.toLowerCase().includes(q) ?? false)
+    )
+    return matchesCategory && matchesQuery
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,6 +61,24 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
           <p className="text-gray-500 mt-2 text-lg">
             {courses.length} course{courses.length !== 1 ? 's' : ''} from real estate professionals
           </p>
+          <div className="mt-6 relative max-w-xl">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">🔍</span>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by title, topic, or instructor…"
+              className="w-full pl-11 pr-10 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none"
+              >
+                ×
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -69,20 +115,25 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
         </div>
 
         {/* Results count */}
-        {selectedCategory && (
+        {(selectedCategory || debouncedQuery) && (
           <p className="text-sm text-gray-500 mb-6">
-            {filtered.length} course{filtered.length !== 1 ? 's' : ''} in {categories.find(c => c.id === selectedCategory)?.name}
+            {filtered.length} course{filtered.length !== 1 ? 's' : ''}
+            {debouncedQuery && <> for <span className="font-medium">"{debouncedQuery}"</span></>}
+            {selectedCategory && <> in {categories.find(c => c.id === selectedCategory)?.name}</>}
           </p>
         )}
 
         {/* Grid */}
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
-            <p className="text-4xl mb-3">📚</p>
-            <p className="text-gray-500 text-lg">No courses in this category yet.</p>
+            <p className="text-4xl mb-3">🔍</p>
+            <p className="text-gray-900 font-semibold text-lg mb-1">
+              {debouncedQuery ? `No results for "${debouncedQuery}"` : 'No courses in this category yet.'}
+            </p>
+            <p className="text-gray-500 text-sm mb-4">Try a different keyword or browse all courses.</p>
             <button
-              onClick={() => setSelectedCategory(null)}
-              className="mt-4 text-blue-600 hover:underline text-sm"
+              onClick={() => { setQuery(''); setSelectedCategory(null) }}
+              className="text-blue-600 hover:underline text-sm"
             >
               View all courses
             </button>
