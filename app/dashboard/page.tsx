@@ -175,14 +175,19 @@ export default async function DashboardPage() {
                   {/* Status + CTA */}
                   <div className="shrink-0 text-right">
                     {enrollment.isCompleted ? (
-                      <div>
-                        <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full mb-2">
+                      <div className="flex flex-col items-end gap-2">
+                        <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
                           ✅ Completed
                         </span>
-                        <br />
+                        <Link
+                          href={`/courses/${enrollment.course.slug}/certificate`}
+                          className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                        >
+                          🎓 View Certificate
+                        </Link>
                         <Link
                           href={`/courses/${enrollment.course.slug}`}
-                          className="text-sm text-gray-500 hover:text-gray-700"
+                          className="text-xs text-gray-400 hover:text-gray-600"
                         >
                           Review course
                         </Link>
