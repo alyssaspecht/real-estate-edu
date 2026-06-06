@@ -141,10 +141,10 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((course) => (
-              <Link
+              <div
                 key={course.id}
-                href={`/courses/${course.slug}`}
-                className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group"
+                onClick={() => router.push(`/courses/${course.slug}`)}
+                className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer"
               >
                 {/* Thumbnail */}
                 <div className="aspect-video bg-gray-100 overflow-hidden">
@@ -185,7 +185,7 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
                     </span>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
