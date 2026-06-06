@@ -75,6 +75,9 @@ export function CreatorCourseList({ courses }: { courses: Course[] }) {
                 <Link href={`/creator/courses/${course.id}/edit`} className="text-sm text-blue-600 hover:underline">
                   Edit
                 </Link>
+                <Link href={`/creator/courses/${course.id}/students`} className="text-sm text-gray-500 hover:text-gray-900">
+                  Students
+                </Link>
                 <button
                   onClick={() => toggleStatus(course.id, course.status)}
                   disabled={toggling === course.id}
