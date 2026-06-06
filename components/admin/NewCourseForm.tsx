@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 
 type Category = { id: string; name: string }
 
-export function NewCourseForm({ categories }: { categories: Category[] }) {
+export function NewCourseForm({ categories, redirectTo = '/admin/courses' }: { categories: Category[], redirectTo?: string }) {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -44,7 +44,7 @@ export function NewCourseForm({ categories }: { categories: Category[] }) {
 
     const data = await res.json()
     if (res.ok) {
-      router.push('/admin/courses')
+      router.push(redirectTo)
     } else {
       setError(data.error ?? 'Failed to create course')
       setSaving(false)
