@@ -57,6 +57,12 @@ export default async function CreatorPage() {
           </div>
           <div className="flex gap-3">
             <Link
+              href="/creator/analytics"
+              className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              Analytics
+            </Link>
+            <Link
               href="/dashboard"
               className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
             >
