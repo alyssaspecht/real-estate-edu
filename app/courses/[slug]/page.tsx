@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { EnrollButton } from '@/components/learner/EnrollButton'
+import { ReviewSection } from '@/components/learner/ReviewSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,6 +44,18 @@ export default async function CourseDetailPage({
     })
     isEnrolled = !!enrollment
   }
+
+  // Reviews
+  const reviews = await prisma.review.findMany({
+    where: { courseId: course.id },
+    orderBy: { createdAt: 'desc' },
+    include: { user: { select: { name: true, avatarUrl: true } } },
+  })
+  const averageRating = reviews.length > 0
+    ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+    : 0
+  const existingReview = user ? (reviews.find(r => r.userId === user.id) ?? null) : null
+  const isCreator = course.creatorId === user?.id
 
   // Find first lesson
   const firstModule = course.modules[0]
@@ -138,6 +151,17 @@ export default async function CourseDetailPage({
         </div>
       </div>
 
+      {/* Average rating in hero */}
+      {reviews.length > 0 && (
+        <div className="max-w-6xl mx-auto px-8 pt-4 pb-0">
+          <div className="flex items-center gap-2 text-yellow-500 text-lg">
+            {'★'.repeat(Math.round(averageRating))}{'☆'.repeat(5 - Math.round(averageRating))}
+            <span className="text-gray-700 font-semibold text-sm">{averageRating.toFixed(1)}</span>
+            <span className="text-gray-400 text-sm">({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
+          </div>
+        </div>
+      )}
+
       {/* Curriculum */}
       <div className="max-w-6xl mx-auto px-8 py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Curriculum</h2>
@@ -174,6 +198,18 @@ export default async function CourseDetailPage({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Reviews */}
+      <div className="bg-gray-50 border-t border-gray-200">
+        <ReviewSection
+          courseId={course.id}
+          reviews={reviews.map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))}
+          averageRating={averageRating}
+          isEnrolled={isEnrolled}
+          isCreator={isCreator}
+          existingReview={existingReview ? { ...existingReview, createdAt: existingReview.createdAt.toISOString() } : null}
+        />
       </div>
     </div>
   )

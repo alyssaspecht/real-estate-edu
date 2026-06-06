@@ -25,6 +25,7 @@ model User {
   createdCourses     Course[]
   creatorApplication CreatorApplication?
   lessonProgress     LessonProgress[]
+  reviews            Review[]
 }
 
 model Profile {
@@ -84,6 +85,7 @@ model Course {
   enrollments Enrollment[]
   orderItems  OrderItem[]
   resources   Resource[]
+  reviews     Review[]
 }
 
 enum CourseStatus {
@@ -210,4 +212,21 @@ model OrderItem {
 
   order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// ─── Reviews ─────────────────────────────────────────────────────────
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  rating    Int      // 1–5
+  body      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
 }

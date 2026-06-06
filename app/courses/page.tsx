@@ -11,6 +11,7 @@ export default async function CoursesPage() {
         category: true,
         creator: { select: { id: true, name: true } },
         _count: { select: { enrollments: true } },
+        reviews: { select: { rating: true } },
       },
       orderBy: { publishedAt: 'desc' },
     }),

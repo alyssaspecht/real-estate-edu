@@ -14,6 +14,7 @@ type Course = {
   category: { id: string; name: string } | null
   creator: { id: string; name: string | null }
   _count: { enrollments: number }
+  reviews: { rating: number }[]
 }
 
 type Category = { id: string; name: string }
@@ -178,6 +179,15 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
                   >
                     {course.creator.name ?? 'Unknown instructor'}
                   </Link>
+                  {course.reviews.length > 0 && (() => {
+                    const avg = course.reviews.reduce((s, r) => s + r.rating, 0) / course.reviews.length
+                    return (
+                      <div className="flex items-center gap-1 mt-1">
+                        <span className="text-yellow-400 text-xs">{'★'.repeat(Math.round(avg))}{'☆'.repeat(5 - Math.round(avg))}</span>
+                        <span className="text-xs text-gray-500">{avg.toFixed(1)} ({course.reviews.length})</span>
+                      </div>
+                    )
+                  })()}
                   <div className="flex items-center justify-between mt-3">
                     <span className="text-xs text-gray-400">{course._count.enrollments} students</span>
                     <span className="font-bold text-gray-900">
