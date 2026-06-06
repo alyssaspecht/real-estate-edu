@@ -32,7 +32,7 @@ type Props = {
   course: Course
   currentLesson: Lesson
   completedLessonIds: string[]
-  userId: string
+  userId: string | null
 }
 
 export function LessonPlayer({ course, currentLesson, completedLessonIds, userId }: Props) {

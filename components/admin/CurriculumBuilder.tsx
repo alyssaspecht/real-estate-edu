@@ -8,6 +8,8 @@ type Lesson = {
   title: string
   type: string
   position: number
+  isFreePreview?: boolean
+  videoPlaybackId?: string | null
 }
 
 type Module = {

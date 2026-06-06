@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { VideoUploader } from './VideoUploader'
 
-type Lesson = { id: string; title: string; type: string; position: number; videoPlaybackId?: string | null }
+type Lesson = { id: string; title: string; type: string; position: number; videoPlaybackId?: string | null; isFreePreview?: boolean }
 type Module = { id: string; title: string; position: number; lessons: Lesson[] }
 
 type Props = {
@@ -28,6 +28,17 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
   const [title, setTitle] = useState(lesson.title)
   const [expanded, setExpanded] = useState(false)
   const [playbackId, setPlaybackId] = useState(lesson.videoPlaybackId ?? null)
+  const [isPreview, setIsPreview] = useState(lesson.isFreePreview ?? false)
+
+  const togglePreview = async () => {
+    const next = !isPreview
+    setIsPreview(next)
+    await fetch(`/api/lessons/${lesson.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isFreePreview: next }),
+    })
+  }
 
   const save = async () => {
     const trimmed = title.trim()
@@ -67,6 +78,16 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
         <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
           {lesson.type}
         </span>
+        <button
+          onClick={togglePreview}
+          className={`text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
+            isPreview
+              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+          }`}
+        >
+          {isPreview ? 'Free Preview ✓' : 'Preview'}
+        </button>
         {lesson.type === 'VIDEO' && (
           <button
             onClick={() => setExpanded(!expanded)}

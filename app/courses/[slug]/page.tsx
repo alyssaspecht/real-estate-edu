@@ -160,6 +160,14 @@ export default async function CourseDetailPage({
                         {Math.floor(lesson.durationSeconds / 60)}:{String(lesson.durationSeconds % 60).padStart(2, '0')}
                       </span>
                     )}
+                    {lesson.isFreePreview && (
+                      <Link
+                        href={`/courses/${slug}/lessons/${lesson.id}`}
+                        className="text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded-full hover:bg-green-200 transition-colors"
+                      >
+                        Free Preview
+                      </Link>
+                    )}
                   </div>
                 ))}
               </div>
