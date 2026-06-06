@@ -38,7 +38,15 @@ export default async function CreatorEditCoursePage({
           <Link href="/creator" className="text-sm text-gray-500 hover:text-gray-700 mb-1 block">
             ← Back to dashboard
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
+            <Link
+              href={`/creator/courses/${id}/students`}
+              className="text-sm text-gray-600 border border-gray-200 bg-white px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              👥 View Students
+            </Link>
+          </div>
         </div>
         <CreatorCourseEditor course={course} categories={categories} />
       </div>
