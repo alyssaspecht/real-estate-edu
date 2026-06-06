@@ -17,6 +17,7 @@ export default async function CourseDetailPage({
     where: { slug, status: 'PUBLISHED' },
     include: {
       category: true,
+      creator: { include: { profile: true } },
       modules: {
         orderBy: { position: 'asc' },
         include: {
@@ -105,6 +106,34 @@ export default async function CourseDetailPage({
                 Sign in to Enroll
               </Link>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* Instructor */}
+      <div className="max-w-6xl mx-auto px-8 pt-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Instructor</h2>
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 flex items-start gap-6">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shrink-0">
+            {course.creator.avatarUrl ? (
+              <img src={course.creator.avatarUrl} alt={course.creator.name ?? ''} className="w-16 h-16 rounded-full object-cover" />
+            ) : (
+              (course.creator.name?.[0] ?? '?').toUpperCase()
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <Link href={`/creators/${course.creator.id}`} className="font-semibold text-gray-900 hover:text-blue-600 hover:underline text-lg">
+              {course.creator.name ?? 'Instructor'}
+            </Link>
+            {course.creator.profile?.headline && (
+              <p className="text-gray-500 text-sm mt-0.5">{course.creator.profile.headline}</p>
+            )}
+            {course.creator.profile?.bio && (
+              <p className="text-gray-600 mt-3 leading-relaxed">{course.creator.profile.bio}</p>
+            )}
+            <Link href={`/creators/${course.creator.id}`} className="inline-block mt-3 text-sm text-blue-600 hover:underline">
+              View all courses by {course.creator.name?.split(' ')[0] ?? 'instructor'} →
+            </Link>
           </div>
         </div>
       </div>
