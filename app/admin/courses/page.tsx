@@ -6,7 +6,11 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminCoursesPage() {
   const courses = await prisma.course.findMany({
-    include: { category: true, _count: { select: { enrollments: true } } },
+    include: {
+      category: true,
+      creator: { select: { id: true, name: true } },
+      _count: { select: { enrollments: true } },
+    },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -15,6 +19,7 @@ export default async function AdminCoursesPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
+            <Link href="/admin" className="text-sm text-gray-500 hover:text-gray-700 mb-1 block">← Admin Dashboard</Link>
             <h1 className="text-3xl font-bold text-gray-900">Courses</h1>
             <p className="text-gray-500 mt-1">Manage all courses on the platform</p>
           </div>

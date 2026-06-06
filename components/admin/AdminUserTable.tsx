@@ -8,6 +8,7 @@ type User = {
   name: string | null
   role: string
   createdAt: Date
+  _count?: { enrollments: number }
 }
 
 export function AdminUserTable({ users }: { users: User[] }) {
@@ -37,6 +38,7 @@ export function AdminUserTable({ users }: { users: User[] }) {
           <th className="px-6 py-3">Name</th>
           <th className="px-6 py-3">Email</th>
           <th className="px-6 py-3">Role</th>
+          <th className="px-6 py-3">Enrollments</th>
           <th className="px-6 py-3">Joined</th>
         </tr>
       </thead>
@@ -61,6 +63,9 @@ export function AdminUserTable({ users }: { users: User[] }) {
               {saving === user.id && (
                 <span className="ml-2 text-xs text-gray-400">Saving...</span>
               )}
+            </td>
+            <td className="px-6 py-4 text-gray-500 text-sm">
+              {user._count?.enrollments ?? 0}
             </td>
             <td className="px-6 py-4 text-gray-500 text-sm">
               {new Date(user.createdAt).toLocaleDateString()}

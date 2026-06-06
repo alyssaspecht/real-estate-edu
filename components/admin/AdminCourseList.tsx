@@ -10,6 +10,7 @@ type Course = {
   price: number
   thumbnail: string | null
   category: { name: string } | null
+  creator: { id: string; name: string | null }
   _count: { enrollments: number }
 }
 
@@ -35,6 +36,7 @@ export function AdminCourseList({ courses }: { courses: Course[] }) {
       <thead>
         <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
           <th className="px-6 py-3">Course</th>
+          <th className="px-6 py-3">Creator</th>
           <th className="px-6 py-3">Category</th>
           <th className="px-6 py-3">Price</th>
           <th className="px-6 py-3">Students</th>
@@ -56,6 +58,11 @@ export function AdminCourseList({ courses }: { courses: Course[] }) {
                 )}
                 <span className="font-medium text-gray-900">{course.title}</span>
               </div>
+            </td>
+            <td className="px-6 py-4 text-gray-500 text-sm">
+              <Link href={`/creators/${course.creator.id}`} className="hover:text-blue-600 hover:underline">
+                {course.creator.name ?? '—'}
+              </Link>
             </td>
             <td className="px-6 py-4 text-gray-500 text-sm">
               {course.category?.name ?? '—'}
