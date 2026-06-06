@@ -28,6 +28,7 @@ type Course = {
   thumbnail: string | null
   categoryId: string | null
   status: string
+  hasCertificate: boolean
   modules: Module[]
 }
 

@@ -179,12 +179,14 @@ export default async function DashboardPage() {
                         <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
                           ✅ Completed
                         </span>
-                        <Link
-                          href={`/courses/${enrollment.course.slug}/certificate`}
-                          className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
-                        >
-                          🎓 View Certificate
-                        </Link>
+                        {enrollment.course.hasCertificate && (
+                          <Link
+                            href={`/courses/${enrollment.course.slug}/certificate`}
+                            className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                          >
+                            🎓 View Certificate
+                          </Link>
+                        )}
                         <Link
                           href={`/courses/${enrollment.course.slug}`}
                           className="text-xs text-gray-400 hover:text-gray-600"

@@ -28,7 +28,7 @@ export default async function CertificatePage({
   })
 
   // Only show certificate if enrollment exists and all lessons are completed
-  if (!enrollment?.completedAt) notFound()
+  if (!enrollment?.completedAt || !course.hasCertificate) notFound()
 
   const learner = await prisma.user.findUnique({
     where: { id: user.id },

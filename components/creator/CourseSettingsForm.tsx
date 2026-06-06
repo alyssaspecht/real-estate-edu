@@ -14,6 +14,7 @@ type CourseSettingsFormProps = {
     thumbnail: string | null
     categoryId: string | null
     status: string
+    hasCertificate: boolean
   }
   categories: Category[]
 }
@@ -25,6 +26,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
   const [price, setPrice] = useState(course.price === 0 ? '' : (course.price / 100).toFixed(2))
   const [categoryId, setCategoryId] = useState(course.categoryId ?? '')
   const [thumbnail, setThumbnail] = useState(course.thumbnail ?? '')
+  const [hasCertificate, setHasCertificate] = useState(course.hasCertificate)
   const [saving, setSaving] = useState(false)
   const [uploadingThumb, setUploadingThumb] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -61,6 +63,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
         price: priceCents,
         categoryId: categoryId || null,
         thumbnail: thumbnail || null,
+        hasCertificate,
       }),
     })
 
@@ -172,6 +175,27 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
             />
           </div>
         </div>
+      </div>
+
+      {/* Certificate toggle */}
+      <div className="flex items-center justify-between py-4 border-t border-gray-100">
+        <div>
+          <p className="text-sm font-medium text-gray-900">Award completion certificate</p>
+          <p className="text-xs text-gray-500 mt-0.5">Learners who finish all lessons can download a certificate</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setHasCertificate(!hasCertificate)}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+            hasCertificate ? 'bg-blue-600' : 'bg-gray-200'
+          }`}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+              hasCertificate ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
       </div>
 
       {/* Actions */}

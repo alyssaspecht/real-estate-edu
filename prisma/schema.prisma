@@ -74,10 +74,11 @@ model Course {
   thumbnail   String?
   price       Int          @default(0) // in cents
   status      CourseStatus @default(DRAFT)
-  categoryId  String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  publishedAt DateTime?
+  categoryId      String?
+  hasCertificate  Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  publishedAt     DateTime?
 
   creator     User         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   category    Category?    @relation(fields: [categoryId], references: [id])
