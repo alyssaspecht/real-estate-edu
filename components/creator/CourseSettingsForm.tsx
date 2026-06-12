@@ -34,6 +34,7 @@ export function CourseSettingsForm({ course, categories, onSaved }: CourseSettin
   const [uploadingThumb, setUploadingThumb] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [deleting, setDeleting] = useState(false)
   const thumbInputRef = useRef<HTMLInputElement>(null)
 
   const uploadThumbnail = async (file: File) => {
@@ -81,6 +82,19 @@ export function CourseSettingsForm({ course, categories, onSaved }: CourseSettin
       setError(data.error ?? 'Failed to save')
     }
     setSaving(false)
+  }
+
+  const handleDelete = async () => {
+    if (!confirm(`Delete "${course.title}"? This cannot be undone.`)) return
+    setDeleting(true)
+    const res = await fetch(`/api/courses/${course.id}`, { method: 'DELETE' })
+    if (res.ok) {
+      router.push('/creator')
+    } else {
+      const data = await res.json()
+      setError(data.error ?? 'Failed to delete course')
+      setDeleting(false)
+    }
   }
 
   return (
@@ -235,6 +249,21 @@ export function CourseSettingsForm({ course, categories, onSaved }: CourseSettin
         </button>
         {saved && <span className="text-green-600 text-sm">✓ Saved</span>}
         {error && <span className="text-red-600 text-sm">{error}</span>}
+      </div>
+
+      {/* Danger zone */}
+      <div className="pt-4 border-t border-border">
+        <p className="text-sm font-medium text-foreground mb-1">Delete this course</p>
+        <p className="text-xs text-muted-foreground mb-3">
+          Permanently deletes the course, its modules, lessons, and enrollment data. This cannot be undone.
+        </p>
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="bg-red-50 text-red-700 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100 disabled:opacity-50 transition-colors"
+        >
+          {deleting ? 'Deleting…' : 'Delete course'}
+        </button>
       </div>
     </div>
   )

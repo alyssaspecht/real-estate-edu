@@ -24,3 +24,27 @@ export async function PATCH(
 
   return NextResponse.json({ course })
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const currentUser = await getCurrentUser()
+  if (!currentUser || (currentUser.role !== 'ADMIN' && currentUser.role !== 'CREATOR')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { id } = await params
+
+  const course = await prisma.course.findUnique({ where: { id }, select: { creatorId: true } })
+  if (!course) {
+    return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+  }
+  if (currentUser.role !== 'ADMIN' && course.creatorId !== currentUser.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  await prisma.course.delete({ where: { id } })
+
+  return NextResponse.json({ success: true })
+}
