@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { title, description, categoryId, price, thumbnail } = await request.json()
+  const { title, description, categoryId, price, thumbnail, visibility } = await request.json()
 
   if (!title) return NextResponse.json({ error: 'Title is required' }, { status: 400 })
 
@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       categoryId: categoryId || null,
       creatorId: currentUser.id,
       status: 'DRAFT',
+      visibility: visibility === 'PRIVATE' ? 'PRIVATE' : 'PUBLIC',
     },
   })
 

@@ -36,7 +36,7 @@ export function CreatorCourseList({ courses }: { courses: Course[] }) {
   return (
     <table className="w-full">
       <thead>
-        <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+        <tr className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider bg-gray-50">
           <th className="px-6 py-3">Course</th>
           <th className="px-6 py-3">Category</th>
           <th className="px-6 py-3">Price</th>
@@ -45,24 +45,24 @@ export function CreatorCourseList({ courses }: { courses: Course[] }) {
           <th className="px-6 py-3">Actions</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-gray-100">
+      <tbody className="divide-y divide-border">
         {courseList.map((course) => (
-          <tr key={course.id} className="hover:bg-gray-50">
+          <tr key={course.id} className="hover:bg-muted">
             <td className="px-6 py-4">
               <div className="flex items-center gap-3">
                 {course.thumbnail ? (
                   <img src={course.thumbnail} className="w-12 h-8 object-cover rounded" alt="" />
                 ) : (
-                  <div className="w-12 h-8 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">📚</div>
+                  <div className="w-12 h-8 bg-muted rounded flex items-center justify-center text-muted-foreground text-xs">📚</div>
                 )}
-                <span className="font-medium text-gray-900 text-sm">{course.title}</span>
+                <span className="font-medium text-foreground text-sm">{course.title}</span>
               </div>
             </td>
-            <td className="px-6 py-4 text-gray-500 text-sm">{course.category?.name ?? '—'}</td>
-            <td className="px-6 py-4 text-gray-900 text-sm">
+            <td className="px-6 py-4 text-muted-foreground text-sm">{course.category?.name ?? '—'}</td>
+            <td className="px-6 py-4 text-foreground text-sm">
               {course.price === 0 ? 'Free' : `$${(course.price / 100).toFixed(2)}`}
             </td>
-            <td className="px-6 py-4 text-gray-500 text-sm">{course._count.enrollments}</td>
+            <td className="px-6 py-4 text-muted-foreground text-sm">{course._count.enrollments}</td>
             <td className="px-6 py-4">
               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                 course.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
@@ -72,16 +72,16 @@ export function CreatorCourseList({ courses }: { courses: Course[] }) {
             </td>
             <td className="px-6 py-4">
               <div className="flex items-center gap-3">
-                <Link href={`/creator/courses/${course.id}/edit`} className="text-sm text-blue-600 hover:underline">
+                <Link href={`/creator/courses/${course.id}/edit`} className="text-sm text-primary hover:underline">
                   Edit
                 </Link>
-                <Link href={`/creator/courses/${course.id}/students`} className="text-sm text-gray-500 hover:text-gray-900">
+                <Link href={`/creator/courses/${course.id}/students`} className="text-sm text-muted-foreground hover:text-foreground">
                   Students
                 </Link>
                 <button
                   onClick={() => toggleStatus(course.id, course.status)}
                   disabled={toggling === course.id}
-                  className="text-sm text-gray-500 hover:text-gray-900 disabled:opacity-50"
+                  className="text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
                 >
                   {toggling === course.id ? '...' : course.status === 'PUBLISHED' ? 'Unpublish' : 'Publish'}
                 </button>

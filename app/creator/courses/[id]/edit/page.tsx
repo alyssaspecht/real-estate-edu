@@ -32,17 +32,17 @@ export default async function CreatorEditCoursePage({
   if (!course) notFound()
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <Link href="/creator" className="text-sm text-gray-500 hover:text-gray-700 mb-1 block">
+          <Link href="/creator" className="text-sm text-muted-foreground hover:text-foreground mb-1 block">
             ← Back to dashboard
           </Link>
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{course.title}</h1>
             <Link
               href={`/creator/courses/${id}/students`}
-              className="text-sm text-gray-600 border border-gray-200 bg-white px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+              className="text-sm text-muted-foreground border border-border bg-card px-4 py-2 rounded-lg hover:bg-muted transition-colors"
             >
               👥 View Students
             </Link>

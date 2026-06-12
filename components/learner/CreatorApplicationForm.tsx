@@ -33,20 +33,20 @@ export function CreatorApplicationForm() {
 
   if (submitted) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+      <div className="glass-card rounded-2xl p-8 text-center">
         <div className="text-4xl mb-4">🎉</div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Application Submitted!</h2>
-        <p className="text-gray-500">We'll review your application and get back to you soon.</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">Application Submitted!</h2>
+        <p className="text-muted-foreground">We'll review your application and get back to you soon.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8">
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Creator Application</h2>
+    <div className="glass-card rounded-2xl p-8">
+      <h2 className="text-xl font-bold text-foreground mb-6">Creator Application</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Professional Bio <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -54,20 +54,20 @@ export function CreatorApplicationForm() {
             onChange={(e) => setBio(e.target.value)}
             required
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             placeholder="Tell us about your real estate background and experience..."
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Years of Experience <span className="text-red-500">*</span>
           </label>
           <select
             value={experience}
             onChange={(e) => setExperience(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">Select experience level</option>
             <option value="1-2">1-2 years</option>
@@ -78,7 +78,7 @@ export function CreatorApplicationForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             What topics would you teach? <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -86,7 +86,7 @@ export function CreatorApplicationForm() {
             onChange={(e) => setTopics(e.target.value)}
             required
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             placeholder="e.g. Lead generation, listing presentations, negotiation strategies..."
           />
         </div>

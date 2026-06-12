@@ -46,16 +46,18 @@ export default async function LessonPage({
 
   // Get user's progress (only if logged in)
   let completedLessonIds: string[] = []
+  let isEnrolled = false
   if (user) {
-    const progress = await prisma.lessonProgress.findMany({
-      where: { userId: user.id },
-    })
+    const [progress, enrollment] = await Promise.all([
+      prisma.lessonProgress.findMany({ where: { userId: user.id } }),
+      prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId: user.id, courseId: course.id } },
+      }),
+    ])
     completedLessonIds = progress.filter(p => p.completedAt).map(p => p.lessonId)
+    isEnrolled = !!enrollment
 
     // Update last accessed (only for enrolled users)
-    const enrollment = await prisma.enrollment.findUnique({
-      where: { userId_courseId: { userId: user.id, courseId: course.id } },
-    })
     if (enrollment) {
       await prisma.enrollment.update({
         where: { userId_courseId: { userId: user.id, courseId: course.id } },
@@ -70,6 +72,7 @@ export default async function LessonPage({
       currentLesson={lesson}
       completedLessonIds={completedLessonIds}
       userId={user?.id ?? null}
+      isEnrolled={isEnrolled}
     />
   )
 }

@@ -15,6 +15,7 @@ type CourseSettingsFormProps = {
     categoryId: string | null
     status: string
     hasCertificate: boolean
+    communityEnabled: boolean
   }
   categories: Category[]
 }
@@ -27,6 +28,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
   const [categoryId, setCategoryId] = useState(course.categoryId ?? '')
   const [thumbnail, setThumbnail] = useState(course.thumbnail ?? '')
   const [hasCertificate, setHasCertificate] = useState(course.hasCertificate)
+  const [communityEnabled, setCommunityEnabled] = useState(course.communityEnabled)
   const [saving, setSaving] = useState(false)
   const [uploadingThumb, setUploadingThumb] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -64,6 +66,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
         categoryId: categoryId || null,
         thumbnail: thumbnail || null,
         hasCertificate,
+        communityEnabled,
       }),
     })
 
@@ -79,31 +82,31 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-6">
+    <div className="glass-card rounded-2xl p-6 space-y-6">
 
       {/* Thumbnail */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail</label>
+        <label className="block text-sm font-medium text-foreground mb-2">Thumbnail</label>
         <div className="flex items-start gap-4">
           <div
-            className="w-40 h-24 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50 overflow-hidden cursor-pointer hover:border-gray-400 transition-colors flex-shrink-0"
+            className="w-40 h-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted overflow-hidden cursor-pointer hover:border-gray-400 transition-colors flex-shrink-0"
             onClick={() => thumbInputRef.current?.click()}
           >
             {thumbnail ? (
               <img src={thumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-gray-400 text-xs text-center px-2">
+              <span className="text-muted-foreground text-xs text-center px-2">
                 {uploadingThumb ? 'Uploading…' : 'Click to upload'}
               </span>
             )}
           </div>
-          <div className="text-sm text-gray-500 pt-1">
+          <div className="text-sm text-muted-foreground pt-1">
             <p>Recommended: 1280×720px (16:9)</p>
             <p className="mt-1">JPG, PNG, or WebP</p>
             <button
               onClick={() => thumbInputRef.current?.click()}
               disabled={uploadingThumb}
-              className="mt-2 text-blue-600 hover:underline disabled:opacity-50 text-sm"
+              className="mt-2 text-primary hover:underline disabled:opacity-50 text-sm"
             >
               {uploadingThumb ? 'Uploading…' : thumbnail ? 'Replace thumbnail' : 'Upload thumbnail'}
             </button>
@@ -123,24 +126,24 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
 
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Course Title</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Course Title</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           placeholder="e.g. Lead Gen Mastery"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
           placeholder="What will students learn? Who is this for?"
         />
       </div>
@@ -148,11 +151,11 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
       {/* Category + Price */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Category</label>
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-background"
           >
             <option value="">— No category —</option>
             {categories.map((c) => (
@@ -161,16 +164,16 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Price (USD)</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Price (USD)</label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               min="0"
               step="0.01"
-              className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-7 pr-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="0.00 for free"
             />
           </div>
@@ -178,21 +181,42 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
       </div>
 
       {/* Certificate toggle */}
-      <div className="flex items-center justify-between py-4 border-t border-gray-100">
+      <div className="flex items-center justify-between py-4 border-t border-border">
         <div>
-          <p className="text-sm font-medium text-gray-900">Award completion certificate</p>
-          <p className="text-xs text-gray-500 mt-0.5">Learners who finish all lessons can download a certificate</p>
+          <p className="text-sm font-medium text-foreground">Award completion certificate</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Learners who finish all lessons can download a certificate</p>
         </div>
         <button
           type="button"
           onClick={() => setHasCertificate(!hasCertificate)}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            hasCertificate ? 'bg-blue-600' : 'bg-gray-200'
+            hasCertificate ? 'bg-primary' : 'bg-gray-200'
           }`}
         >
           <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+            className={`inline-block h-4 w-4 transform rounded-full bg-card shadow transition-transform ${
               hasCertificate ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Community discussion toggle */}
+      <div className="flex items-center justify-between py-4 border-t border-border">
+        <div>
+          <p className="text-sm font-medium text-foreground">Enable community discussion</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Students can post questions and reply to each other on your course page</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setCommunityEnabled(!communityEnabled)}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+            communityEnabled ? 'bg-primary' : 'bg-gray-200'
+          }`}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-card shadow transition-transform ${
+              communityEnabled ? 'translate-x-6' : 'translate-x-1'
             }`}
           />
         </button>
@@ -203,7 +227,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
         <button
           onClick={save}
           disabled={saving || uploadingThumb}
-          className="bg-gray-900 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
+          className="bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
         >
           {saving ? 'Saving…' : 'Save Changes'}
         </button>

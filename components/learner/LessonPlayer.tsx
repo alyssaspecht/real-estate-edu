@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { CourseAssistant } from './CourseAssistant'
+import { XPToast } from '@/components/gamification/XPToast'
 
 type Lesson = {
   id: string
@@ -33,12 +35,14 @@ type Props = {
   currentLesson: Lesson
   completedLessonIds: string[]
   userId: string | null
+  isEnrolled: boolean
 }
 
-export function LessonPlayer({ course, currentLesson, completedLessonIds, userId }: Props) {
+export function LessonPlayer({ course, currentLesson, completedLessonIds, userId, isEnrolled }: Props) {
   const router = useRouter()
   const [completed, setCompleted] = useState(new Set(completedLessonIds))
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [xpToast, setXpToast] = useState<{ xpEarned: number; newBadges: string[]; streak: { current: number } } | null>(null)
 
   // Flatten all lessons for next/prev navigation
   const allLessons = course.modules.flatMap(m => m.lessons)
@@ -47,12 +51,23 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
   const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null
 
   const markComplete = async () => {
-    await fetch(`/api/progress`, {
+    const res = await fetch(`/api/progress`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lessonId: currentLesson.id }),
     })
+    const data = await res.json()
     setCompleted(prev => new Set([...prev, currentLesson.id]))
+
+    // Show XP toast
+    if (data.gamification) {
+      const cg = data.courseGamification
+      setXpToast({
+        xpEarned: (data.gamification.xpEarned ?? 0) + (cg?.xpEarned ?? 0),
+        newBadges: [...(data.gamification.newBadges ?? []), ...(cg?.newBadges ?? [])],
+        streak: data.gamification.streak ?? { current: 0 },
+      })
+    }
 
     // Auto-advance to next lesson
     if (nextLesson) {
@@ -63,21 +78,21 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
   const isCompleted = completed.has(currentLesson.id)
 
   return (
-    <div className="flex h-screen bg-gray-900 overflow-hidden">
+    <div className="flex h-screen bg-card overflow-hidden">
       {/* Sidebar */}
       {sidebarOpen && (
-        <div className="w-80 bg-gray-800 flex flex-col shrink-0 overflow-hidden">
+        <div className="w-80 bg-muted flex flex-col shrink-0 overflow-hidden">
           {/* Course title */}
-          <div className="p-4 border-b border-gray-700">
-            <Link href={`/courses/${course.slug}`} className="text-gray-400 text-xs hover:text-white">
+          <div className="p-4 border-b border-border">
+            <Link href={`/courses/${course.slug}`} className="text-muted-foreground text-xs hover:text-white">
               ← Back to course
             </Link>
             <h2 className="text-white font-semibold text-sm mt-2 line-clamp-2">{course.title}</h2>
-            <p className="text-gray-400 text-xs mt-1">
+            <p className="text-muted-foreground text-xs mt-1">
               {completed.size} / {allLessons.length} lessons completed
             </p>
             {/* Progress bar */}
-            <div className="mt-2 bg-gray-700 rounded-full h-1.5">
+            <div className="mt-2 bg-secondary rounded-full h-1.5">
               <div
                 className="bg-blue-500 h-1.5 rounded-full transition-all"
                 style={{ width: `${(completed.size / allLessons.length) * 100}%` }}
@@ -90,7 +105,7 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
             {course.modules.map((module) => (
               <div key={module.id}>
                 <div className="px-4 py-2 bg-gray-750">
-                  <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                  <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                     {module.title}
                   </p>
                 </div>
@@ -103,8 +118,8 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
                       href={`/courses/${course.slug}/lessons/${lesson.id}`}
                       className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
                         isCurrent
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-300 hover:bg-gray-700'
+                          ? 'bg-primary text-white'
+                          : 'text-muted-foreground hover:bg-secondary'
                       }`}
                     >
                       <span className="text-xs shrink-0">
@@ -128,10 +143,10 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <div className="bg-gray-800 border-b border-gray-700 px-6 py-3 flex items-center gap-4">
+        <div className="bg-muted border-b border-border px-6 py-3 flex items-center gap-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-400 hover:text-white text-sm"
+            className="text-muted-foreground hover:text-white text-sm"
           >
             {sidebarOpen ? '◀ Hide' : '▶ Show'} curriculum
           </button>
@@ -140,7 +155,7 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
             {prevLesson && (
               <Link
                 href={`/courses/${course.slug}/lessons/${prevLesson.id}`}
-                className="text-gray-400 hover:text-white text-sm"
+                className="text-muted-foreground hover:text-white text-sm"
               >
                 ← Prev
               </Link>
@@ -148,7 +163,7 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
             {nextLesson && (
               <Link
                 href={`/courses/${course.slug}/lessons/${nextLesson.id}`}
-                className="text-gray-400 hover:text-white text-sm"
+                className="text-muted-foreground hover:text-white text-sm"
               >
                 Next →
               </Link>
@@ -167,8 +182,8 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
               />
             </div>
           ) : currentLesson.type === 'VIDEO' && !currentLesson.videoPlaybackId ? (
-            <div className="aspect-video bg-gray-800 flex items-center justify-center">
-              <p className="text-gray-400">No video uploaded for this lesson yet.</p>
+            <div className="aspect-video bg-muted flex items-center justify-center">
+              <p className="text-muted-foreground">No video uploaded for this lesson yet.</p>
             </div>
           ) : null}
 
@@ -178,7 +193,7 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
 
             {currentLesson.type === 'TEXT' && currentLesson.contentBody && (
               <div className="prose prose-invert max-w-none mb-8">
-                <p className="text-gray-300 leading-relaxed">{currentLesson.contentBody}</p>
+                <p className="text-muted-foreground leading-relaxed">{currentLesson.contentBody}</p>
               </div>
             )}
 
@@ -187,7 +202,7 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
               {!isCompleted ? (
                 <button
                   onClick={markComplete}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                  className="bg-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors"
                 >
                   {nextLesson ? 'Complete & Continue →' : 'Complete Course ✓'}
                 </button>
@@ -197,7 +212,7 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
                   {nextLesson && (
                     <Link
                       href={`/courses/${course.slug}/lessons/${nextLesson.id}`}
-                      className="bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors"
+                      className="bg-secondary text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors"
                     >
                       Next Lesson →
                     </Link>
@@ -208,6 +223,24 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
           </div>
         </div>
       </div>
+
+      {/* AI Course Assistant — enrolled users only */}
+      {isEnrolled && (
+        <CourseAssistant
+          lessonId={currentLesson.id}
+          lessonTitle={currentLesson.title}
+        />
+      )}
+
+      {/* XP / Badge toast */}
+      {xpToast && (
+        <XPToast
+          xpEarned={xpToast.xpEarned}
+          newBadges={xpToast.newBadges}
+          streak={xpToast.streak}
+          onDone={() => setXpToast(null)}
+        />
+      )}
     </div>
   )
 }

@@ -66,62 +66,62 @@ export default async function CreatorAnalyticsPage() {
     : null
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/creator" className="text-sm text-gray-500 hover:text-gray-700 mb-1 block">← Creator Dashboard</Link>
-            <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-            <p className="text-gray-500 mt-1">Performance overview for your courses</p>
+            <Link href="/creator" className="text-sm text-muted-foreground hover:text-foreground mb-1 block">← Creator Dashboard</Link>
+            <h1 className="text-3xl font-bold text-foreground">Analytics</h1>
+            <p className="text-muted-foreground mt-1">Performance overview for your courses</p>
           </div>
         </div>
 
         {/* Summary stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Total Courses</p>
-            <p className="text-4xl font-bold text-gray-900 mt-2">{courses.length}</p>
+          <div className="glass-card rounded-2xl p-6">
+            <p className="text-sm text-muted-foreground">Total Courses</p>
+            <p className="text-4xl font-bold text-foreground mt-2">{courses.length}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Total Enrollments</p>
-            <p className="text-4xl font-bold text-blue-600 mt-2">{totalEnrollments}</p>
+          <div className="glass-card rounded-2xl p-6">
+            <p className="text-sm text-muted-foreground">Total Enrollments</p>
+            <p className="text-4xl font-bold text-primary mt-2">{totalEnrollments}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Avg Completion Rate</p>
+          <div className="glass-card rounded-2xl p-6">
+            <p className="text-sm text-muted-foreground">Avg Completion Rate</p>
             <p className="text-4xl font-bold text-green-600 mt-2">{overallCompletion}%</p>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Avg Rating</p>
+          <div className="glass-card rounded-2xl p-6">
+            <p className="text-sm text-muted-foreground">Avg Rating</p>
             <p className="text-4xl font-bold text-yellow-500 mt-2">
               {overallRating !== null ? overallRating.toFixed(1) : '—'}
             </p>
             {allRatings.length > 0 && (
-              <p className="text-xs text-gray-400 mt-1">{allRatings.length} review{allRatings.length !== 1 ? 's' : ''}</p>
+              <p className="text-xs text-muted-foreground mt-1">{allRatings.length} review{allRatings.length !== 1 ? 's' : ''}</p>
             )}
           </div>
         </div>
 
         {/* Enrollment trend */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
-          <h2 className="font-semibold text-gray-900 mb-6">Enrollment Trend — Last 6 Months</h2>
+        <div className="glass-card rounded-2xl p-6 mb-8">
+          <h2 className="font-semibold text-foreground mb-6">Enrollment Trend — Last 6 Months</h2>
           {totalEnrollments === 0 ? (
-            <p className="text-gray-400 text-sm text-center py-8">No enrollments yet</p>
+            <p className="text-muted-foreground text-sm text-center py-8">No enrollments yet</p>
           ) : (
             <div className="flex items-end gap-3 h-40">
               {trend.map((m) => (
                 <div key={m.label} className="flex-1 flex flex-col items-center gap-2">
-                  <span className="text-xs font-medium text-gray-600">
+                  <span className="text-xs font-medium text-muted-foreground">
                     {m.count > 0 ? m.count : ''}
                   </span>
                   <div className="w-full flex items-end justify-center" style={{ height: '96px' }}>
                     <div
-                      className="w-full bg-blue-500 rounded-t-lg transition-all"
+                      className="w-full bg-primary/100 rounded-t-lg transition-all"
                       style={{ height: `${Math.max((m.count / maxTrend) * 96, m.count > 0 ? 8 : 2)}px` }}
                     />
                   </div>
-                  <span className="text-xs text-gray-400">{m.label}</span>
+                  <span className="text-xs text-muted-foreground">{m.label}</span>
                 </div>
               ))}
             </div>
@@ -133,9 +133,9 @@ export default async function CreatorAnalyticsPage() {
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-2xl p-6 mb-8 flex items-center gap-6">
             <span className="text-4xl">⭐</span>
             <div className="flex-1">
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">Top Performing Course</p>
-              <p className="font-semibold text-gray-900 text-lg">{topCourse.title}</p>
-              <div className="flex gap-4 mt-1 text-sm text-gray-500">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">Top Performing Course</p>
+              <p className="font-semibold text-foreground text-lg">{topCourse.title}</p>
+              <div className="flex gap-4 mt-1 text-sm text-muted-foreground">
                 <span>{topCourse.totalEnrollments} student{topCourse.totalEnrollments !== 1 ? 's' : ''}</span>
                 <span>{topCourse.completionRate}% completion</span>
                 {topCourse.avgRating && <span>★ {topCourse.avgRating.toFixed(1)}</span>}
@@ -143,7 +143,7 @@ export default async function CreatorAnalyticsPage() {
             </div>
             <Link
               href={`/creator/courses/${topCourse.id}/edit`}
-              className="text-sm text-blue-600 hover:underline shrink-0"
+              className="text-sm text-primary hover:underline shrink-0"
             >
               Edit course →
             </Link>
@@ -151,18 +151,18 @@ export default async function CreatorAnalyticsPage() {
         )}
 
         {/* Per-course table */}
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900">Course Breakdown</h2>
+        <div className="glass-card rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="font-semibold text-foreground">Course Breakdown</h2>
           </div>
           {courseStats.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
-              No courses yet. <Link href="/creator/courses/new" className="text-blue-600 hover:underline">Create your first course</Link>
+            <div className="p-12 text-center text-muted-foreground">
+              No courses yet. <Link href="/creator/courses/new" className="text-primary hover:underline">Create your first course</Link>
             </div>
           ) : (
             <table className="w-full">
               <thead>
-                <tr className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+                <tr className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-muted border-b border-border">
                   <th className="px-6 py-3">Course</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Enrollments</th>
@@ -172,11 +172,11 @@ export default async function CreatorAnalyticsPage() {
                   <th className="px-6 py-3"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-border">
                 {courseStats.map((course) => (
-                  <tr key={course.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={course.id} className="hover:bg-muted transition-colors">
                     <td className="px-6 py-4">
-                      <p className="font-medium text-gray-900 text-sm line-clamp-1">{course.title}</p>
+                      <p className="font-medium text-foreground text-sm line-clamp-1">{course.title}</p>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -185,34 +185,34 @@ export default async function CreatorAnalyticsPage() {
                         {course.status === 'PUBLISHED' ? 'Published' : 'Draft'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 font-medium">{course.totalEnrollments}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{course.completed}</td>
+                    <td className="px-6 py-4 text-sm text-foreground font-medium">{course.totalEnrollments}</td>
+                    <td className="px-6 py-4 text-sm text-foreground">{course.completed}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-20 bg-gray-100 rounded-full h-1.5">
+                        <div className="w-20 bg-muted rounded-full h-1.5">
                           <div
                             className="bg-green-500 h-1.5 rounded-full"
                             style={{ width: `${course.completionRate}%` }}
                           />
                         </div>
-                        <span className="text-sm text-gray-600">{course.completionRate}%</span>
+                        <span className="text-sm text-muted-foreground">{course.completionRate}%</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-6 py-4 text-sm text-foreground">
                       {course.avgRating !== null ? (
                         <span className="flex items-center gap-1">
                           <span className="text-yellow-400">★</span>
                           {course.avgRating.toFixed(1)}
-                          <span className="text-gray-400 text-xs">({course.reviews.length})</span>
+                          <span className="text-muted-foreground text-xs">({course.reviews.length})</span>
                         </span>
                       ) : (
-                        <span className="text-gray-400 text-xs">No reviews</span>
+                        <span className="text-muted-foreground text-xs">No reviews</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-3">
-                        <Link href={`/creator/courses/${course.id}/students`} className="text-xs text-blue-600 hover:underline">Students</Link>
-                        <Link href={`/creator/courses/${course.id}/edit`} className="text-xs text-gray-500 hover:text-gray-700">Edit</Link>
+                        <Link href={`/creator/courses/${course.id}/students`} className="text-xs text-primary hover:underline">Students</Link>
+                        <Link href={`/creator/courses/${course.id}/edit`} className="text-xs text-muted-foreground hover:text-foreground">Edit</Link>
                       </div>
                     </td>
                   </tr>

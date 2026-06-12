@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
+import { onLessonComplete, onCourseComplete } from '@/lib/gamification'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -8,6 +9,12 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { lessonId, watchPosition } = await request.json()
+
+  // Check if already completed (to avoid double XP)
+  const existing = await prisma.lessonProgress.findUnique({
+    where: { userId_lessonId: { userId: user.id, lessonId } },
+  })
+  const alreadyCompleted = !!existing?.completedAt
 
   // Mark lesson complete
   await prisma.lessonProgress.upsert({
@@ -24,12 +31,19 @@ export async function POST(request: Request) {
     },
   })
 
+  // Gamification (only on first completion)
+  let gamification = null
+  if (!alreadyCompleted) {
+    gamification = await onLessonComplete(user.id)
+  }
+
   // Check if all lessons in the course are now complete
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
     include: { module: { include: { course: { include: { modules: { include: { lessons: true } } } } } } },
   })
 
+  let courseGamification = null
   if (lesson) {
     const course = lesson.module.course
     const allLessons = course.modules.flatMap(m => m.lessons)
@@ -42,14 +56,24 @@ export async function POST(request: Request) {
       },
     })
 
-    // If all lessons completed, mark enrollment as complete
     if (completedProgress.length >= allLessons.length) {
-      await prisma.enrollment.updateMany({
+      // Mark enrollment complete
+      const enrollment = await prisma.enrollment.findFirst({
         where: { userId: user.id, courseId: course.id, completedAt: null },
-        data: { completedAt: new Date() },
       })
+      if (enrollment) {
+        await prisma.enrollment.update({
+          where: { id: enrollment.id },
+          data: { completedAt: new Date() },
+        })
+        courseGamification = await onCourseComplete(user.id)
+      }
     }
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({
+    success: true,
+    gamification,
+    courseGamification,
+  })
 }

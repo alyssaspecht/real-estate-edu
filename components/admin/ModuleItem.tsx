@@ -56,7 +56,7 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
 
   return (
     <div className="border-b border-gray-50 last:border-0">
-      <div className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50">
+      <div className="flex items-center gap-3 px-6 py-3 hover:bg-muted">
         <span className="text-sm">{lessonTypeIcons[lesson.type] ?? '📄'}</span>
         {editing ? (
           <input
@@ -69,13 +69,13 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
           />
         ) : (
           <span
-            className="flex-1 text-sm text-gray-700 cursor-pointer hover:text-blue-600"
+            className="flex-1 text-sm text-foreground cursor-pointer hover:text-primary"
             onClick={() => setEditing(true)}
           >
             {title}
           </span>
         )}
-        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
           {lesson.type}
         </span>
         <button
@@ -83,7 +83,7 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
           className={`text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
             isPreview
               ? 'bg-green-100 text-green-700 hover:bg-green-200'
-              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              : 'bg-muted text-muted-foreground hover:bg-muted'
           }`}
         >
           {isPreview ? 'Free Preview ✓' : 'Preview'}
@@ -91,7 +91,7 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
         {lesson.type === 'VIDEO' && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-xs text-blue-600 hover:underline"
+            className="text-xs text-primary hover:underline"
           >
             {expanded ? 'Close' : playbackId ? 'Replace video' : 'Upload video'}
           </button>
@@ -150,24 +150,24 @@ export function ModuleItem({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <div className="glass-card rounded-2xl overflow-hidden">
       {/* Module header */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 border-b border-gray-100">
+      <div className="flex items-center gap-3 px-4 py-3 bg-muted border-b border-border">
         {/* Reorder */}
         <div className="flex flex-col gap-1">
           <button
             onClick={() => onMove('up')}
             disabled={index === 0}
-            className="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-30 text-gray-600 text-xs"
+            className="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-30 text-muted-foreground text-xs"
           >↑</button>
           <button
             onClick={() => onMove('down')}
             disabled={index === total - 1}
-            className="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-30 text-gray-600 text-xs"
+            className="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-30 text-muted-foreground text-xs"
           >↓</button>
         </div>
 
-        <button onClick={() => setExpanded(!expanded)} className="text-gray-400 text-sm">
+        <button onClick={() => setExpanded(!expanded)} className="text-muted-foreground text-sm">
           {expanded ? '▼' : '▶'}
         </button>
 
@@ -182,18 +182,18 @@ export function ModuleItem({
           />
         ) : (
           <span
-            className="flex-1 font-medium text-gray-900 text-sm cursor-pointer hover:text-blue-600"
+            className="flex-1 font-medium text-foreground text-sm cursor-pointer hover:text-primary"
             onClick={() => setEditingTitle(true)}
           >
             {module.title}
           </span>
         )}
 
-        <span className="text-xs text-gray-400">{module.lessons.length} lessons</span>
+        <span className="text-xs text-muted-foreground">{module.lessons.length} lessons</span>
 
         <button
           onClick={() => setShowNewLesson(true)}
-          className="text-xs text-blue-600 hover:underline"
+          className="text-xs text-primary hover:underline"
         >
           + Lesson
         </button>
@@ -208,11 +208,11 @@ export function ModuleItem({
 
       {/* Lessons */}
       {expanded && (
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-border">
           {module.lessons.length === 0 && !showNewLesson && (
-            <div className="px-6 py-4 text-sm text-gray-400 text-center">
+            <div className="px-6 py-4 text-sm text-muted-foreground text-center">
               No lessons yet —{' '}
-              <button onClick={() => setShowNewLesson(true)} className="text-blue-600 hover:underline">
+              <button onClick={() => setShowNewLesson(true)} className="text-primary hover:underline">
                 add one
               </button>
             </div>
@@ -228,11 +228,11 @@ export function ModuleItem({
 
           {/* New lesson form */}
           {showNewLesson && (
-            <div className="px-6 py-3 bg-blue-50 flex gap-2 items-center">
+            <div className="px-6 py-3 bg-primary/10 flex gap-2 items-center">
               <select
                 value={newLessonType}
                 onChange={(e) => setNewLessonType(e.target.value)}
-                className="text-sm border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="text-sm border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="VIDEO">🎬 Video</option>
                 <option value="TEXT">📝 Text</option>
@@ -245,18 +245,18 @@ export function ModuleItem({
                 onChange={(e) => setNewLessonTitle(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddLesson()}
                 placeholder="Lesson title"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <button
                 onClick={handleAddLesson}
                 disabled={addingLesson}
-                className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm hover:bg-gray-700 disabled:opacity-50"
+                className="bg-primary text-primary-foreground px-3 py-2 rounded-lg text-sm hover:bg-primary/90 disabled:opacity-50"
               >
                 {addingLesson ? '...' : 'Add'}
               </button>
               <button
                 onClick={() => { setShowNewLesson(false); setNewLessonTitle('') }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-muted-foreground"
               >✕</button>
             </div>
           )}

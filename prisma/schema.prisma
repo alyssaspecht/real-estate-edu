@@ -16,6 +16,7 @@ model User {
   name      String?
   avatarUrl String?
   role      Role     @default(LEARNER)
+  xp        Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -26,6 +27,49 @@ model User {
   creatorApplication CreatorApplication?
   lessonProgress     LessonProgress[]
   reviews            Review[]
+  coupons            Coupon[]
+  learningPaths      LearningPath[]
+  discussions        Discussion[]
+  discussionReplies  DiscussionReply[]
+  notifications      Notification[]
+  createdTemplates   Template[]
+  templatePurchases  TemplatePurchase[]
+  streak             UserStreak?
+  badges             UserBadge[]
+
+  teamMemberships  TeamMembership[] @relation("TeamMember")
+  teamMembers      TeamMembership[] @relation("TeamLead")
+  assignmentsGiven Assignment[]     @relation("AssignedBy")
+  assignmentsToMe  Assignment[]     @relation("AssignedTo")
+}
+
+// ─── Team Management ─────────────────────────────────────────────────
+
+model TeamMembership {
+  id         String   @id @default(uuid())
+  teamLeadId String
+  memberId   String
+  createdAt  DateTime @default(now())
+
+  teamLead User @relation("TeamLead", fields: [teamLeadId], references: [id], onDelete: Cascade)
+  member   User @relation("TeamMember", fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([teamLeadId, memberId])
+}
+
+model Assignment {
+  id           String    @id @default(uuid())
+  assignedById String
+  assignedToId String
+  courseId     String
+  createdAt    DateTime  @default(now())
+  dueDate      DateTime?
+
+  assignedBy User   @relation("AssignedBy", fields: [assignedById], references: [id], onDelete: Cascade)
+  assignedTo User   @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: Cascade)
+  course     Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([assignedToId, courseId])
 }
 
 model Profile {
@@ -74,25 +118,36 @@ model Course {
   thumbnail   String?
   price       Int          @default(0) // in cents
   status      CourseStatus @default(DRAFT)
+  visibility  CourseVisibility @default(PUBLIC)
   categoryId      String?
-  hasCertificate  Boolean      @default(true)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  publishedAt     DateTime?
+  hasCertificate   Boolean      @default(true)
+  communityEnabled Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  publishedAt      DateTime?
 
-  creator     User         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  category    Category?    @relation(fields: [categoryId], references: [id])
-  modules     Module[]
-  enrollments Enrollment[]
-  orderItems  OrderItem[]
-  resources   Resource[]
-  reviews     Review[]
+  creator      User         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  modules      Module[]
+  enrollments  Enrollment[]
+  orderItems   OrderItem[]
+  resources    Resource[]
+  reviews      Review[]
+  coupons      Coupon[]
+  learningPaths LearningPathCourse[]
+  discussions  Discussion[]
+  assignments  Assignment[]
 }
 
 enum CourseStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+}
+
+enum CourseVisibility {
+  PUBLIC
+  PRIVATE
 }
 
 model Category {
@@ -230,4 +285,198 @@ model Review {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+}
+
+// ─── Coupons ─────────────────────────────────────────────────────────
+
+model Coupon {
+  id            String       @id @default(uuid())
+  creatorId     String
+  courseId      String?      // null = applies to all creator's courses
+  code          String       @unique
+  discountType  DiscountType
+  discountValue Int          // percent (0–100) or cents
+  expiresAt     DateTime?
+  active        Boolean      @default(true)
+  usedCount     Int          @default(0)
+  createdAt     DateTime     @default(now())
+
+  creator User    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  course  Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+// ─── Learning Paths ───────────────────────────────────────────────────
+
+model LearningPath {
+  id          String   @id @default(uuid())
+  creatorId   String
+  title       String
+  slug        String   @unique
+  description String?
+  thumbnail   String?
+  price       Int      @default(0) // in cents; 0 = free
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator User                 @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  courses LearningPathCourse[]
+}
+
+model LearningPathCourse {
+  id             String @id @default(uuid())
+  learningPathId String
+  courseId       String
+  position       Int
+
+  learningPath LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([learningPathId, courseId])
+}
+
+// ─── Community Discussions ────────────────────────────────────────────
+
+model Discussion {
+  id        String   @id @default(uuid())
+  courseId  String
+  authorId  String
+  title     String
+  body      String
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course  Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  author  User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  replies DiscussionReply[]
+}
+
+model DiscussionReply {
+  id           String   @id @default(uuid())
+  discussionId String
+  authorId     String
+  body         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  discussion Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+// ─── Tools & Templates Marketplace ───────────────────────────────────
+
+model TemplateCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  icon        String   // emoji icon
+  description String?
+  position    Int      @default(0)
+
+  templates Template[]
+}
+
+model Template {
+  id             String         @id @default(uuid())
+  creatorId      String?        // null = platform-owned
+  categoryId     String
+  title          String
+  slug           String         @unique
+  description    String?
+  longDescription String?
+  price          Int            @default(0) // cents; 0 = free
+  fileUrl        String?        // downloadable file
+  templateLinkUrl String?       // Canva / Google Slides / Notion link (revealed after purchase)
+  deliveryType   String         @default("FILE") // "FILE" | "LINK"
+  previewImageUrl String?       // cover/preview image
+  fileType       String?        // "PDF", "DOCX", "PPTX", etc.
+  fileSize       Int?           // bytes
+  categoryNote   String?        // creator's category suggestion (admin-visible only)
+  isPlatformItem Boolean        @default(false)
+  status         TemplateStatus @default(DRAFT)
+  downloadCount  Int            @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  publishedAt    DateTime?
+
+  creator   User?             @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  category  TemplateCategory  @relation(fields: [categoryId], references: [id])
+  purchases TemplatePurchase[]
+}
+
+enum TemplateStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model TemplatePurchase {
+  id           String   @id @default(uuid())
+  userId       String
+  templateId   String
+  pricePaid    Int      @default(0) // cents
+  purchasedAt  DateTime @default(now())
+  downloadedAt DateTime?
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId])
+}
+
+// ─── Gamification ─────────────────────────────────────────────────────
+
+model UserStreak {
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  current          Int       @default(0)
+  longest          Int       @default(0)
+  lastActivityDate DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Badge {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  name        String
+  description String
+  icon        String  // emoji
+  category    String  // 'streak' | 'completion' | 'xp' | 'engagement'
+  threshold   Int?    // numeric requirement (e.g. 7 for 7-day streak)
+
+  userBadges UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(uuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+// ─── Notifications ────────────────────────────────────────────────────
+
+model Notification {
+  id           String   @id @default(uuid())
+  userId       String                        // recipient
+  type         String                        // e.g. "discussion_reply"
+  title        String
+  body         String
+  linkUrl      String?
+  read         Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

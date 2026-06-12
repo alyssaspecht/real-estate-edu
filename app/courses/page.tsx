@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 export default async function CoursesPage() {
   const [courses, categories] = await Promise.all([
     prisma.course.findMany({
-      where: { status: 'PUBLISHED' },
+      where: { status: 'PUBLISHED', visibility: 'PUBLIC' },
       include: {
         category: true,
         creator: { select: { id: true, name: true } },

@@ -86,13 +86,13 @@ export function ReviewSection({ courseId, reviews: initialReviews, averageRating
   return (
     <div className="max-w-6xl mx-auto px-8 py-12">
       <div className="flex items-center gap-6 mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Reviews</h2>
+        <h2 className="text-2xl font-bold text-foreground">Reviews</h2>
         {reviews.length > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-3xl font-bold text-gray-900">{avg.toFixed(1)}</span>
+            <span className="text-3xl font-bold text-foreground">{avg.toFixed(1)}</span>
             <div>
               <Stars rating={Math.round(avg)} size="lg" />
-              <p className="text-sm text-gray-500 mt-0.5">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
+              <p className="text-sm text-muted-foreground mt-0.5">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
             </div>
           </div>
         )}
@@ -100,38 +100,38 @@ export function ReviewSection({ courseId, reviews: initialReviews, averageRating
 
       {/* Write / edit review */}
       {isEnrolled && !isCreator && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+        <div className="glass-card rounded-2xl p-6 mb-8">
           {myReview && !editing ? (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="font-semibold text-gray-900 text-sm">Your review</p>
-                <button onClick={() => setEditing(true)} className="text-xs text-blue-600 hover:underline">Edit</button>
+                <p className="font-semibold text-foreground text-sm">Your review</p>
+                <button onClick={() => setEditing(true)} className="text-xs text-primary hover:underline">Edit</button>
               </div>
               <Stars rating={myReview.rating} />
-              {myReview.body && <p className="text-gray-700 text-sm mt-2">{myReview.body}</p>}
+              {myReview.body && <p className="text-foreground text-sm mt-2">{myReview.body}</p>}
             </div>
           ) : editing ? (
             <div>
-              <p className="font-semibold text-gray-900 mb-3">{myReview ? 'Edit your review' : 'Leave a review'}</p>
+              <p className="font-semibold text-foreground mb-3">{myReview ? 'Edit your review' : 'Leave a review'}</p>
               <Stars rating={rating} size="lg" interactive onChange={setRating} />
               <textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Share your experience (optional)…"
                 rows={3}
-                className="mt-3 w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
+                className="mt-3 w-full border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
               />
               {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
               <div className="flex gap-3 mt-3">
                 <button
                   onClick={submit}
                   disabled={submitting}
-                  className="bg-gray-900 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                  className="bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
                 >
                   {submitting ? 'Saving…' : 'Submit Review'}
                 </button>
                 {myReview && (
-                  <button onClick={() => setEditing(false)} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+                  <button onClick={() => setEditing(false)} className="text-sm text-muted-foreground hover:text-foreground">Cancel</button>
                 )}
               </div>
             </div>
@@ -141,8 +141,8 @@ export function ReviewSection({ courseId, reviews: initialReviews, averageRating
 
       {/* Review list */}
       {reviews.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
-          <p className="text-gray-400">No reviews yet.{isEnrolled && !isCreator ? ' Be the first!' : ''}</p>
+        <div className="glass-card rounded-2xl p-10 text-center">
+          <p className="text-muted-foreground">No reviews yet.{isEnrolled && !isCreator ? ' Be the first!' : ''}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -151,20 +151,20 @@ export function ReviewSection({ courseId, reviews: initialReviews, averageRating
               ? review.user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
               : '?'
             return (
-              <div key={review.id} className="bg-white rounded-2xl border border-gray-200 p-6">
+              <div key={review.id} className="glass-card rounded-2xl p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
                     {initials}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
-                      <span className="font-medium text-gray-900 text-sm">{review.user.name ?? 'Anonymous'}</span>
+                      <span className="font-medium text-foreground text-sm">{review.user.name ?? 'Anonymous'}</span>
                       <Stars rating={review.rating} />
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </span>
                     </div>
-                    {review.body && <p className="text-gray-700 text-sm leading-relaxed">{review.body}</p>}
+                    {review.body && <p className="text-foreground text-sm leading-relaxed">{review.body}</p>}
                   </div>
                 </div>
               </div>

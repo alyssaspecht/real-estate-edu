@@ -42,10 +42,10 @@ export default async function CertificatePage({
   })
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8 print:bg-white print:p-0">
+    <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-8 print:bg-white print:p-0">
       {/* Back link — hidden on print */}
       <div className="mb-6 self-start print:hidden">
-        <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">
+        <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
           ← Back to dashboard
         </Link>
       </div>
@@ -56,7 +56,7 @@ export default async function CertificatePage({
       </div>
 
       {/* Certificate */}
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-lg overflow-hidden print:shadow-none print:rounded-none print:max-w-none">
+      <div className="bg-card w-full max-w-3xl rounded-2xl shadow-lg overflow-hidden print:shadow-none print:rounded-none print:max-w-none">
         {/* Top accent bar */}
         <div className="h-3 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600" />
 
@@ -66,19 +66,19 @@ export default async function CertificatePage({
             🎓
           </div>
 
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
             Certificate of Completion
           </p>
 
-          <p className="text-gray-600 mt-4 mb-2 text-lg">This certifies that</p>
+          <p className="text-muted-foreground mt-4 mb-2 text-lg">This certifies that</p>
 
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             {learner?.name ?? 'Learner'}
           </h1>
 
-          <p className="text-gray-600 text-lg mb-2">has successfully completed</p>
+          <p className="text-muted-foreground text-lg mb-2">has successfully completed</p>
 
-          <h2 className="text-2xl font-bold text-blue-700 mb-8 leading-snug max-w-lg mx-auto">
+          <h2 className="text-2xl font-bold text-primary mb-8 leading-snug max-w-lg mx-auto">
             {course.title}
           </h2>
 
@@ -90,14 +90,14 @@ export default async function CertificatePage({
           </div>
 
           {/* Footer info */}
-          <div className="flex items-center justify-center gap-16 text-sm text-gray-500">
+          <div className="flex items-center justify-center gap-16 text-sm text-muted-foreground">
             <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Instructor</p>
-              <p className="font-semibold text-gray-800">{course.creator.name ?? 'Instructor'}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Instructor</p>
+              <p className="font-semibold text-foreground">{course.creator.name ?? 'Instructor'}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Completed</p>
-              <p className="font-semibold text-gray-800">{completionDate}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Completed</p>
+              <p className="font-semibold text-foreground">{completionDate}</p>
             </div>
           </div>
         </div>

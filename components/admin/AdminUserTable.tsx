@@ -34,7 +34,7 @@ export function AdminUserTable({ users }: { users: User[] }) {
   return (
     <table className="w-full">
       <thead>
-        <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+        <tr className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider bg-gray-50">
           <th className="px-6 py-3">Name</th>
           <th className="px-6 py-3">Email</th>
           <th className="px-6 py-3">Role</th>
@@ -42,32 +42,32 @@ export function AdminUserTable({ users }: { users: User[] }) {
           <th className="px-6 py-3">Joined</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-gray-100">
+      <tbody className="divide-y divide-border">
         {userList.map((user) => (
-          <tr key={user.id} className="hover:bg-gray-50">
-            <td className="px-6 py-4 font-medium text-gray-900">
+          <tr key={user.id} className="hover:bg-muted">
+            <td className="px-6 py-4 font-medium text-foreground">
               {user.name ?? '—'}
             </td>
-            <td className="px-6 py-4 text-gray-500 text-sm">{user.email}</td>
+            <td className="px-6 py-4 text-muted-foreground text-sm">{user.email}</td>
             <td className="px-6 py-4">
               <select
                 value={user.role}
                 onChange={(e) => handleRoleChange(user.id, e.target.value)}
                 disabled={saving === user.id}
-                className="text-sm border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="text-sm border border-border rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="LEARNER">Learner</option>
                 <option value="CREATOR">Creator</option>
                 <option value="ADMIN">Admin</option>
               </select>
               {saving === user.id && (
-                <span className="ml-2 text-xs text-gray-400">Saving...</span>
+                <span className="ml-2 text-xs text-muted-foreground">Saving...</span>
               )}
             </td>
-            <td className="px-6 py-4 text-gray-500 text-sm">
+            <td className="px-6 py-4 text-muted-foreground text-sm">
               {user._count?.enrollments ?? 0}
             </td>
-            <td className="px-6 py-4 text-gray-500 text-sm">
+            <td className="px-6 py-4 text-muted-foreground text-sm">
               {new Date(user.createdAt).toLocaleDateString()}
             </td>
           </tr>

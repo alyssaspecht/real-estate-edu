@@ -13,16 +13,16 @@ export default async function ApplicationsPage() {
   const reviewed = applications.filter(a => a.status !== 'PENDING')
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Creator Applications</h1>
-          <p className="text-gray-500 mt-1">{pending.length} pending review</p>
+          <h1 className="text-3xl font-bold text-foreground">Creator Applications</h1>
+          <p className="text-muted-foreground mt-1">{pending.length} pending review</p>
         </div>
 
         {applications.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
-            <p className="text-gray-400">No applications yet</p>
+          <div className="glass-card rounded-2xl p-12 text-center">
+            <p className="text-muted-foreground">No applications yet</p>
           </div>
         ) : (
           <ApplicationsList applications={applications} />

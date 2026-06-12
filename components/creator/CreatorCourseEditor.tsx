@@ -29,6 +29,7 @@ type Course = {
   categoryId: string | null
   status: string
   hasCertificate: boolean
+  communityEnabled: boolean
   modules: Module[]
 }
 
@@ -78,15 +79,15 @@ export function CreatorCourseEditor({ course, categories }: Props) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-gray-200">
+      <div className="flex gap-1 mb-6 border-b border-border">
         {(['curriculum', 'settings'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
               tab === t
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-gray-900 text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {t}

@@ -110,12 +110,12 @@ export function CurriculumBuilder({ course }: { course: Course }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Curriculum <span className="text-gray-400 font-normal text-sm">({modules.length} modules)</span>
+        <h2 className="text-lg font-semibold text-foreground">
+          Curriculum <span className="text-muted-foreground font-normal text-sm">({modules.length} modules)</span>
         </h2>
         <button
           onClick={() => setShowNewModule(true)}
-          className="text-sm bg-gray-900 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+          className="text-sm bg-primary text-primary-foreground px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors"
         >
           + Add Module
         </button>
@@ -124,11 +124,11 @@ export function CurriculumBuilder({ course }: { course: Course }) {
       {/* Module list */}
       <div className="space-y-3">
         {modules.length === 0 && !showNewModule && (
-          <div className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-10 text-center">
-            <p className="text-gray-400 mb-3">No modules yet</p>
+          <div className="bg-card rounded-2xl border-2 border-dashed border-border p-10 text-center">
+            <p className="text-muted-foreground mb-3">No modules yet</p>
             <button
               onClick={() => setShowNewModule(true)}
-              className="text-sm text-blue-600 font-medium hover:underline"
+              className="text-sm text-primary font-medium hover:underline"
             >
               Add your first module
             </button>
@@ -151,7 +151,7 @@ export function CurriculumBuilder({ course }: { course: Course }) {
 
         {/* New module input */}
         {showNewModule && (
-          <div className="bg-white rounded-2xl border border-blue-200 p-4 flex gap-2">
+          <div className="bg-card rounded-2xl border border-blue-200 p-4 flex gap-2">
             <input
               type="text"
               value={newModuleTitle}
@@ -159,18 +159,18 @@ export function CurriculumBuilder({ course }: { course: Course }) {
               onKeyDown={(e) => e.key === 'Enter' && addModule()}
               autoFocus
               placeholder="Module title (e.g. Introduction)"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button
               onClick={addModule}
               disabled={addingModule}
-              className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 disabled:opacity-50"
+              className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm hover:bg-primary/90 disabled:opacity-50"
             >
               {addingModule ? 'Adding...' : 'Add'}
             </button>
             <button
               onClick={() => { setShowNewModule(false); setNewModuleTitle('') }}
-              className="text-gray-400 hover:text-gray-600 px-2"
+              className="text-muted-foreground hover:text-muted-foreground px-2"
             >
               ✕
             </button>

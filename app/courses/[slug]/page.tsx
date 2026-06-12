@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { EnrollButton } from '@/components/learner/EnrollButton'
 import { ReviewSection } from '@/components/learner/ReviewSection'
+import { CourseDiscussion } from '@/components/learner/CourseDiscussion'
 
 export const dynamic = 'force-dynamic'
 
@@ -66,23 +67,23 @@ export default async function CourseDetailPage({
   const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Hero */}
-      <div className="bg-gray-900 text-white">
+      <div className="border-b border-white/8 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-8 py-12 flex gap-12 items-start">
           <div className="flex-1">
             {course.category && (
-              <span className="text-blue-400 text-sm font-medium">
+              <span className="text-primary text-sm font-medium">
                 {course.category.name}
               </span>
             )}
-            <h1 className="text-3xl font-bold mt-2 mb-4">{course.title}</h1>
+            <h1 className="text-3xl font-bold text-foreground mt-2 mb-4">{course.title}</h1>
             {course.description && (
-              <p className="text-gray-300 text-lg leading-relaxed mb-6">
+              <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                 {course.description}
               </p>
             )}
-            <div className="flex items-center gap-6 text-sm text-gray-400">
+            <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <span>📚 {course.modules.length} modules</span>
               <span>🎬 {totalLessons} lessons</span>
               <span>👥 {course._count.enrollments} students</span>
@@ -90,7 +91,7 @@ export default async function CourseDetailPage({
           </div>
 
           {/* Enrollment card */}
-          <div className="w-80 bg-white rounded-2xl p-6 text-gray-900 shrink-0">
+          <div className="w-80 glass-card rounded-2xl p-6 text-foreground shrink-0">
             {course.thumbnail && (
               <img
                 src={course.thumbnail}
@@ -114,7 +115,7 @@ export default async function CourseDetailPage({
             ) : (
               <Link
                 href="/login"
-                className="block w-full bg-gray-900 text-white text-center py-3 rounded-xl font-semibold hover:bg-gray-700 transition-colors"
+                className="block w-full bg-primary text-primary-foreground text-center py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors"
               >
                 Sign in to Enroll
               </Link>
@@ -125,8 +126,8 @@ export default async function CourseDetailPage({
 
       {/* Instructor */}
       <div className="max-w-6xl mx-auto px-8 pt-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Instructor</h2>
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 flex items-start gap-6">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Your Instructor</h2>
+        <div className="glass-card rounded-2xl p-6 flex items-start gap-6">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shrink-0">
             {course.creator.avatarUrl ? (
               <img src={course.creator.avatarUrl} alt={course.creator.name ?? ''} className="w-16 h-16 rounded-full object-cover" />
@@ -135,16 +136,16 @@ export default async function CourseDetailPage({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <Link href={`/creators/${course.creator.id}`} className="font-semibold text-gray-900 hover:text-blue-600 hover:underline text-lg">
+            <Link href={`/creators/${course.creator.id}`} className="font-semibold text-foreground hover:text-primary hover:underline text-lg">
               {course.creator.name ?? 'Instructor'}
             </Link>
             {course.creator.profile?.headline && (
-              <p className="text-gray-500 text-sm mt-0.5">{course.creator.profile.headline}</p>
+              <p className="text-muted-foreground text-sm mt-0.5">{course.creator.profile.headline}</p>
             )}
             {course.creator.profile?.bio && (
-              <p className="text-gray-600 mt-3 leading-relaxed">{course.creator.profile.bio}</p>
+              <p className="text-muted-foreground mt-3 leading-relaxed">{course.creator.profile.bio}</p>
             )}
-            <Link href={`/creators/${course.creator.id}`} className="inline-block mt-3 text-sm text-blue-600 hover:underline">
+            <Link href={`/creators/${course.creator.id}`} className="inline-block mt-3 text-sm text-primary hover:underline">
               View all courses by {course.creator.name?.split(' ')[0] ?? 'instructor'} →
             </Link>
           </div>
@@ -156,31 +157,31 @@ export default async function CourseDetailPage({
         <div className="max-w-6xl mx-auto px-8 pt-4 pb-0">
           <div className="flex items-center gap-2 text-yellow-500 text-lg">
             {'★'.repeat(Math.round(averageRating))}{'☆'.repeat(5 - Math.round(averageRating))}
-            <span className="text-gray-700 font-semibold text-sm">{averageRating.toFixed(1)}</span>
-            <span className="text-gray-400 text-sm">({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
+            <span className="text-foreground font-semibold text-sm">{averageRating.toFixed(1)}</span>
+            <span className="text-muted-foreground text-sm">({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
           </div>
         </div>
       )}
 
       {/* Curriculum */}
       <div className="max-w-6xl mx-auto px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Curriculum</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-6">Course Curriculum</h2>
         <div className="space-y-3">
           {course.modules.map((module) => (
-            <div key={module.id} className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
-                <h3 className="font-semibold text-gray-900">{module.title}</h3>
-                <p className="text-sm text-gray-500 mt-0.5">{module.lessons.length} lessons</p>
+            <div key={module.id} className="glass-card rounded-2xl overflow-hidden">
+              <div className="px-6 py-4 bg-white/5 border-b border-white/8">
+                <h3 className="font-semibold text-foreground">{module.title}</h3>
+                <p className="text-sm text-muted-foreground mt-0.5">{module.lessons.length} lessons</p>
               </div>
-              <div className="divide-y divide-gray-50">
+              <div className="divide-y divide-white/6">
                 {module.lessons.map((lesson) => (
                   <div key={lesson.id} className="flex items-center gap-3 px-6 py-3">
                     <span className="text-sm">
                       {lesson.type === 'VIDEO' ? '🎬' : lesson.type === 'TEXT' ? '📝' : '📎'}
                     </span>
-                    <span className="flex-1 text-sm text-gray-700">{lesson.title}</span>
+                    <span className="flex-1 text-sm text-foreground">{lesson.title}</span>
                     {lesson.durationSeconds && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {Math.floor(lesson.durationSeconds / 60)}:{String(lesson.durationSeconds % 60).padStart(2, '0')}
                       </span>
                     )}
@@ -201,7 +202,7 @@ export default async function CourseDetailPage({
       </div>
 
       {/* Reviews */}
-      <div className="bg-gray-50 border-t border-gray-200">
+      <div className="bg-muted border-t border-border">
         <ReviewSection
           courseId={course.id}
           reviews={reviews.map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))}
@@ -211,6 +212,18 @@ export default async function CourseDetailPage({
           existingReview={existingReview ? { ...existingReview, createdAt: existingReview.createdAt.toISOString() } : null}
         />
       </div>
+
+      {/* Community Discussion — enrolled users and creator only */}
+      {course.communityEnabled && (isEnrolled || isCreator) && (
+        <div className="max-w-6xl mx-auto px-8 py-12">
+          <CourseDiscussion
+            courseId={course.id}
+            creatorId={course.creatorId}
+            currentUserId={user?.id ?? null}
+            isEnrolled={isEnrolled}
+          />
+        </div>
+      )}
     </div>
   )
 }
