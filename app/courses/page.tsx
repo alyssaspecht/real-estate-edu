@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { CourseBrowse } from '@/components/learner/CourseBrowse'
 import { getCurrentUser } from '@/lib/auth/getUser'
@@ -11,11 +12,13 @@ const courseCardSelect = {
   description: true,
   thumbnail: true,
   price: true,
-  category: { select: { id: true, name: true } },
+  category: true,
   creator: { select: { id: true, name: true } },
   _count: { select: { enrollments: true } },
   reviews: { select: { rating: true } },
 } as const
+
+type CourseCard = Prisma.CourseGetPayload<{ select: typeof courseCardSelect }>
 
 export default async function CoursesPage() {
   const [courses, categories, currentUser] = await Promise.all([
@@ -33,7 +36,7 @@ export default async function CoursesPage() {
     getCurrentUser(),
   ])
 
-  let myCourses: typeof courses = []
+  let myCourses: CourseCard[] = []
 
   if (currentUser) {
     const enrollments = await prisma.enrollment.findMany({
