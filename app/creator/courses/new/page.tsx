@@ -22,7 +22,7 @@ export default async function CreatorNewCoursePage() {
             <p className="text-sm text-muted-foreground">Paste a transcript or notes and let AI draft the course structure for you</p>
           </div>
         </Link>
-        <NewCourseForm categories={categories} redirectTo="/creator" />
+        <NewCourseForm categories={categories} />
       </div>
     </div>
   )

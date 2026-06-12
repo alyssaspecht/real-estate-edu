@@ -18,9 +18,10 @@ type CourseSettingsFormProps = {
     communityEnabled: boolean
   }
   categories: Category[]
+  onSaved?: () => void
 }
 
-export function CourseSettingsForm({ course, categories }: CourseSettingsFormProps) {
+export function CourseSettingsForm({ course, categories, onSaved }: CourseSettingsFormProps) {
   const router = useRouter()
   const [title, setTitle] = useState(course.title)
   const [description, setDescription] = useState(course.description ?? '')
@@ -74,6 +75,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
       setSaved(true)
       router.refresh()
       setTimeout(() => setSaved(false), 3000)
+      onSaved?.()
     } else {
       const data = await res.json()
       setError(data.error ?? 'Failed to save')

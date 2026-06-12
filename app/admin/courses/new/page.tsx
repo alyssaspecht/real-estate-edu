@@ -11,7 +11,7 @@ export default async function NewCoursePage() {
           <h1 className="text-3xl font-bold text-foreground">New Course</h1>
           <p className="text-muted-foreground mt-1">Fill in the details to create a new course</p>
         </div>
-        <NewCourseForm categories={categories} />
+        <NewCourseForm categories={categories} redirectTo="/admin/courses" />
       </div>
     </div>
   )

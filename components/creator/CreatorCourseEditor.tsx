@@ -97,7 +97,13 @@ export function CreatorCourseEditor({ course, categories }: Props) {
 
       {tab === 'curriculum' && <CurriculumBuilder course={course} />}
       {tab === 'settings' && (
-        <CourseSettingsForm course={course} categories={categories} />
+        <CourseSettingsForm
+          course={course}
+          categories={categories}
+          onSaved={() => {
+            if (course.modules.length === 0) setTab('curriculum')
+          }}
+        />
       )}
     </div>
   )
