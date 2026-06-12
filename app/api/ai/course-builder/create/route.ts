@@ -17,6 +17,7 @@ const draftSchema = z.object({
   title: z.string().min(1),
   description: z.string(),
   categoryId: z.string().optional().nullable(),
+  thumbnail: z.string().optional().nullable(),
   modules: z.array(moduleSchema).min(1),
 })
 
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid course draft' }, { status: 400 })
   }
 
-  const { title, description, categoryId, modules } = parsed.data
+  const { title, description, categoryId, thumbnail, modules } = parsed.data
 
   const slug = title
     .toLowerCase()
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       title,
       slug,
       description,
+      thumbnail: thumbnail || null,
       categoryId: categoryId || null,
       creatorId: currentUser.id,
       status: 'DRAFT',
