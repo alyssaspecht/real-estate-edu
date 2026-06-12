@@ -21,7 +21,7 @@ export default async function CreatorEditCoursePage({
       include: {
         modules: {
           orderBy: { position: 'asc' },
-          include: { lessons: { orderBy: { position: 'asc' } } },
+          include: { lessons: { orderBy: { position: 'asc' }, include: { resources: true } } },
         },
         category: true,
       },

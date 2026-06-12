@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { ModuleItem } from './ModuleItem'
 
+type Resource = { id: string; name: string; fileUrl: string; type: string }
+
 type Lesson = {
   id: string
   title: string
@@ -10,6 +12,7 @@ type Lesson = {
   position: number
   isFreePreview?: boolean
   videoPlaybackId?: string | null
+  resources?: Resource[]
 }
 
 type Module = {

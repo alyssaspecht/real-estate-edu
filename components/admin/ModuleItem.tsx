@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { VideoUploader } from './VideoUploader'
+import { ResourceUploader } from './ResourceUploader'
 
-type Lesson = { id: string; title: string; type: string; position: number; videoPlaybackId?: string | null; isFreePreview?: boolean }
+type Resource = { id: string; name: string; fileUrl: string; type: string }
+type Lesson = { id: string; title: string; type: string; position: number; videoPlaybackId?: string | null; isFreePreview?: boolean; resources?: Resource[] }
 type Module = { id: string; title: string; position: number; lessons: Lesson[] }
 
 type Props = {
@@ -29,6 +31,7 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
   const [expanded, setExpanded] = useState(false)
   const [playbackId, setPlaybackId] = useState(lesson.videoPlaybackId ?? null)
   const [isPreview, setIsPreview] = useState(lesson.isFreePreview ?? false)
+  const [resources, setResources] = useState<Resource[]>(lesson.resources ?? [])
 
   const togglePreview = async () => {
     const next = !isPreview
@@ -96,10 +99,25 @@ function LessonRow({ lesson, onDelete }: { lesson: Lesson; onDelete: () => void 
             {expanded ? 'Close' : playbackId ? 'Replace video' : 'Upload video'}
           </button>
         )}
+        {lesson.type === 'RESOURCE' && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="text-xs text-primary hover:underline"
+          >
+            {expanded ? 'Close' : resources.length > 0 ? `Manage files (${resources.length})` : 'Upload file'}
+          </button>
+        )}
         <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600">
           Delete
         </button>
       </div>
+
+      {/* Resource upload panel */}
+      {expanded && lesson.type === 'RESOURCE' && (
+        <div className="px-6 pb-4 bg-gray-50">
+          <ResourceUploader lessonId={lesson.id} resources={resources} onChange={setResources} />
+        </div>
+      )}
 
       {/* Video upload panel */}
       {expanded && lesson.type === 'VIDEO' && (
