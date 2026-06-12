@@ -28,9 +28,11 @@ const MIN_RATING_LABELS: Record<number, string> = {
   4.5: '4.5+ stars',
 }
 
-export function CourseBrowse({ courses, categories }: { courses: Course[]; categories: Category[] }) {
+export function CourseBrowse({ courses, categories, myCourses, isLoggedIn }: { courses: Course[]; categories: Category[]; myCourses: Course[]; isLoggedIn: boolean }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  const [view, setView] = useState<'my' | 'browse'>(isLoggedIn ? 'my' : 'browse')
 
   const [query, setQuery] = useState(searchParams.get('q') ?? '')
   const [debouncedQuery, setDebouncedQuery] = useState(query)
@@ -66,7 +68,9 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
     setMinRating(0)
   }
 
-  const filtered = courses.filter((c) => {
+  const sourceCourses = view === 'my' ? myCourses : courses
+
+  const filtered = sourceCourses.filter((c) => {
     if (selectedCategory && c.category?.id !== selectedCategory) return false
     if (priceFilter === 'free' && c.price !== 0) return false
     if (priceFilter === 'paid' && c.price === 0) return false
@@ -89,10 +93,29 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
       {/* Hero */}
       <div className="border-b border-white/8 px-8 py-12 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold text-foreground">Browse Courses</h1>
+          <h1 className="text-4xl font-bold text-foreground">{view === 'my' ? 'My Courses' : 'Browse Courses'}</h1>
           <p className="text-muted-foreground mt-2 text-lg">
-            {courses.length} course{courses.length !== 1 ? 's' : ''} from real estate professionals
+            {view === 'my'
+              ? `${myCourses.length} course${myCourses.length !== 1 ? 's' : ''} you're enrolled in or created`
+              : `${courses.length} course${courses.length !== 1 ? 's' : ''} from real estate professionals`}
           </p>
+
+          {isLoggedIn && (
+            <div className="mt-6 inline-flex rounded-lg border border-border overflow-hidden text-sm">
+              {(['my', 'browse'] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setView(v)}
+                  className={`px-4 py-2 font-medium transition-colors ${
+                    view === v ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  {v === 'my' ? 'My Courses' : 'Browse All Courses'}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="mt-6 flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[260px] max-w-xl">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">🔍</span>
@@ -201,10 +224,21 @@ export function CourseBrowse({ courses, categories }: { courses: Course[]; categ
 
         {filtered.length === 0 ? (
           <div className="glass-card rounded-2xl p-12 text-center">
-            <p className="text-4xl mb-3">🔍</p>
-            <p className="text-foreground font-semibold text-lg mb-1">No courses match your filters</p>
-            <p className="text-muted-foreground text-sm mb-4">Try adjusting your search or removing a filter.</p>
-            <button onClick={resetFilters} className="text-primary hover:underline text-sm">Clear all filters</button>
+            {view === 'my' && !hasFilters ? (
+              <>
+                <p className="text-4xl mb-3">📚</p>
+                <p className="text-foreground font-semibold text-lg mb-1">You haven't enrolled in any courses yet</p>
+                <p className="text-muted-foreground text-sm mb-4">Browse our catalog to find your next course.</p>
+                <button onClick={() => setView('browse')} className="text-primary hover:underline text-sm">Browse all courses</button>
+              </>
+            ) : (
+              <>
+                <p className="text-4xl mb-3">🔍</p>
+                <p className="text-foreground font-semibold text-lg mb-1">No courses match your filters</p>
+                <p className="text-muted-foreground text-sm mb-4">Try adjusting your search or removing a filter.</p>
+                <button onClick={resetFilters} className="text-primary hover:underline text-sm">Clear all filters</button>
+              </>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
