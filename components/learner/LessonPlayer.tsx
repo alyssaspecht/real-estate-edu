@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { CourseAssistant } from './CourseAssistant'
 import { XPToast } from '@/components/gamification/XPToast'
 
+type Resource = { id: string; name: string; fileUrl: string; type: string }
+
 type Lesson = {
   id: string
   title: string
@@ -14,6 +16,7 @@ type Lesson = {
   videoPlaybackId?: string | null
   contentBody?: string | null
   durationSeconds?: number | null
+  resources?: Resource[]
 }
 
 type Module = {
@@ -194,6 +197,28 @@ export function LessonPlayer({ course, currentLesson, completedLessonIds, userId
             {currentLesson.type === 'TEXT' && currentLesson.contentBody && (
               <div className="prose prose-invert max-w-none mb-8">
                 <p className="text-muted-foreground leading-relaxed">{currentLesson.contentBody}</p>
+              </div>
+            )}
+
+            {currentLesson.type === 'RESOURCE' && (
+              <div className="mb-8 space-y-2">
+                {currentLesson.resources && currentLesson.resources.length > 0 ? (
+                  currentLesson.resources.map((r) => (
+                    <a
+                      key={r.id}
+                      href={r.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      className="flex items-center justify-between bg-secondary/40 hover:bg-secondary/60 rounded-xl px-4 py-3 transition-colors"
+                    >
+                      <span className="text-white text-sm">📎 {r.name}</span>
+                      <span className="text-primary text-sm font-medium">Download</span>
+                    </a>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground">No files have been uploaded for this lesson yet.</p>
+                )}
               </div>
             )}
 

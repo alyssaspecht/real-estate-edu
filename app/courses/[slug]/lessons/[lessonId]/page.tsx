@@ -26,7 +26,7 @@ export default async function LessonPage({
   if (!course) notFound()
 
   // Get current lesson first so we can check isFreePreview
-  const lesson = await prisma.lesson.findUnique({ where: { id: lessonId } })
+  const lesson = await prisma.lesson.findUnique({ where: { id: lessonId }, include: { resources: true } })
   if (!lesson) notFound()
 
   // Check auth
